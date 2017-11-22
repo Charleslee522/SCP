@@ -1,6 +1,7 @@
 #include "node.hpp"
 #include "quorum.hpp"
-#include "message.hpp"
+#include "PrepareMessage.hpp"
+#include "FinishMessage.hpp"
 #include "slot.hpp"
 #include <memory>
 using namespace DISTPROJ;
@@ -153,7 +154,9 @@ void Slot::handle(std::shared_ptr<PrepareMessage> msg) {
     // Now check that one of our quorum slices has all voted for or 
     // accepted b.
     auto b_voted_or_accepted = node->quorumSet.threshold;
+#ifdef VERBOSE
     printf("[NODE %llu] quorumSet.threshold: %d\n", node->id, node->quorumSet.threshold);
+#endif
     for (auto kp : messageMap_) {
       auto m = kp.second;
       switch (m->type()) {

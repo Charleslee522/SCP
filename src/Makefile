@@ -9,6 +9,7 @@ BIN_DIR=../bin
 # Source and header dirs.
 RPC_DIR=./rpc-layer
 SCP_DIR=./scp
+MESSAGE_DIR=$(SCP_DIR)/message
 ASTEROID_DIR=./apps/kv-stores/asteroid
 COMET_DIR=./apps/kv-stores/comet
 UTIL_DIR=./util
@@ -17,7 +18,7 @@ SSL_LIB_DIR=/usr/local/Cellar/openssl/1.0.2l/lib/
 CER_DIR=./cer
 
 # define any directories containing header files other than /usr/include, e.g. -I
-INCLUDES = -I $(RPC_DIR) -I $(LIB_DIR) -I $(SCP_DIR) -I $(UTIL_DIR)
+INCLUDES = -I $(RPC_DIR) -I $(LIB_DIR) -I $(SCP_DIR) -I $(MESSAGE_DIR) -I $(UTIL_DIR)
 # define library paths in addition to /usr/lib, e.g. -L
 LFLAGS = -L $(SSL_LIB_DIR)
 
@@ -48,7 +49,8 @@ MAIN = $(BIN_DIR)/asteroid
 endif
 
 SRCS += $(RPC_DIR)/fakeRPC.cpp
-SRCS += $(SCP_DIR)/message.cpp $(SCP_DIR)/node.cpp $(SCP_DIR)/slot.cpp
+SRCS += $(SCP_DIR)/node.cpp $(SCP_DIR)/slot.cpp
+SRCS += $(MESSAGE_DIR)/FinishMessage.cpp $(MESSAGE_DIR)/PrepareMessage.cpp
 
 # define the C source files
 OBJS = $(join $(dir $(SRCS)), $(notdir $(SRCS:.cpp=.o)))

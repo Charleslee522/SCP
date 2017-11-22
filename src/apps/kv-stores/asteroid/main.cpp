@@ -3,7 +3,8 @@
 
 #include "RPC.hpp"
 #include "fakeRPC.hpp"
-#include "message.hpp"
+#include "PrepareMessage.hpp"
+#include "FinishMessage.hpp"
 #include "quorum.hpp"
 #include "node.hpp"
 #include "ballot.hpp"

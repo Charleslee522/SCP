@@ -1,4 +1,4 @@
-#include "message.hpp"
+#include "PrepareMessage.hpp"
 #include "slot.hpp"
 #include "quorum.hpp"
 #include <string>
@@ -7,38 +7,6 @@
 
 
 using namespace DISTPROJ;
-
-
-
-
-// template<class Archive>
-// void Message::serialize(Archive & archive) {
-//   auto pm = (PrepareMessage*) this;
-//   auto fm = (FinishMessage*) this;
-//   switch (t) {
-//   case PrepareMessage_t:
-// 	pm->serialize(archive);
-// 	break;
-//   case FinishMessage_t:
-// 	fm->serialize(archive);
-// 	break;
-//   default:
-// 	archive("grave error: Tried to serialize raw message");
-// 	break;
-//   }
-// }
-
-
-bool FinishMessage::isBiggerNumberThan( std::shared_ptr<Message> m) {
-  auto message = std::static_pointer_cast<FinishMessage>(m);
-  switch (m->type()){
-  case FinishMessage_t:
-	return b.num > message->b.num;
-  default:
-	return true;
-  }
-}
-
 
 bool PrepareMessage::isBiggerNumberThan( std::shared_ptr<Message> m) {
   auto message = std::static_pointer_cast<PrepareMessage>(m);

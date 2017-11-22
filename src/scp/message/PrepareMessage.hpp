@@ -1,8 +1,9 @@
-#ifndef MESSAGE_H
-#define MESSAGE_H
+#ifndef PREPARE_MESSAGE_H
+#define PREPARE_MESSAGE_H
 
 #include <string>
 
+#include "message.hpp"
 #include "ballot.hpp"
 #include "quorum.hpp"
 #include "common.hpp"
@@ -12,25 +13,8 @@
 
 namespace DISTPROJ {
 
-  enum MessageType {FinishMessage_t=0, PrepareMessage_t=1};
-  
   class Slot;
-  class FinishMessage;
-  class PrepareMessage;
-  class Message {
-  private:
-    MessageType t;
 
-  public:
-    Message(MessageType t) : t(t){};
-    MessageType type() { return t;};
-    // Message f(std::string s);
-    virtual unsigned int getSlot() = 0;
-
-    virtual bool isBiggerNumberThan(std::shared_ptr<Message> x) = 0;
-	
-  };
-  
   class PrepareMessage : public Message {
 
   public:
@@ -59,37 +43,10 @@ namespace DISTPROJ {
     friend Slot;
     
   };
-  
-  class FinishMessage : public Message {
-    
-  public:
-	FinishMessage(): FinishMessage(0,0,Ballot{}, Quorum{}){};
-    FinishMessage(NodeID _v, unsigned int _slotID, Ballot _b, Quorum _d)
-      : Message(FinishMessage_t), v(_v), slotID(_slotID), b(_b), d(_d)  {};
-
-
-
-    template<class Archive>
-    void serialize(Archive & archive) {
-      archive(CEREAL_NVP(v),CEREAL_NVP(slotID), CEREAL_NVP(b),CEREAL_NVP(d)); // serialize things by passing them to the archive
-    };
-    unsigned int getSlot() { return slotID; };
-    NodeID from() {return v;};
-    bool isBiggerNumberThan( std::shared_ptr<Message> x);
-  private:
-    NodeID v;
-    unsigned int slotID;
-    Ballot b;
-    Quorum d;
-
-    friend Slot;
-  };
 
 }
 
 CEREAL_REGISTER_POLYMORPHIC_RELATION(DISTPROJ::Message, DISTPROJ::PrepareMessage);
-CEREAL_REGISTER_POLYMORPHIC_RELATION(DISTPROJ::Message, DISTPROJ::FinishMessage);
-CEREAL_REGISTER_TYPE_WITH_NAME(DISTPROJ::FinishMessage, "Finish");
 CEREAL_REGISTER_TYPE_WITH_NAME(DISTPROJ::PrepareMessage, "Prepare");
 
 #endif

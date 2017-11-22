@@ -2,7 +2,8 @@
 #include <iostream>
 #include <set>
 
-#include "message.hpp"
+#include "PrepareMessage.hpp"
+#include "FinishMessage.hpp"
 #include "fakeRPC.hpp"
 #include "quorum.hpp"
 #include "slot.hpp"
