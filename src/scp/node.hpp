@@ -46,7 +46,7 @@ namespace DISTPROJ {
     void AddKnownNode(NodeID v);
     void AddNodeToQuorum(NodeID v);
     void RemoveNodeFromQuorum(NodeID v);
-    void UpdateQurorum(Quorum quorumSet);
+    void UpdateQuorum(Quorum quorumSet);
 
     int QuorumSize();
     void SetThreshold(int t);

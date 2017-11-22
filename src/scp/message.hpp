@@ -27,7 +27,7 @@ namespace DISTPROJ {
     // Message f(std::string s);
     virtual unsigned int getSlot() = 0;
 
-    virtual bool follows(std::shared_ptr<Message> x) = 0;
+    virtual bool isBiggerNumberThan(std::shared_ptr<Message> x) = 0;
 	
   };
   
@@ -48,7 +48,7 @@ namespace DISTPROJ {
     unsigned int getSlot() { return slotID; };
     NodeID from() {return v;};
 
-    bool follows( std::shared_ptr<Message> x);
+    bool isBiggerNumberThan( std::shared_ptr<Message> x);
   private:
     NodeID v;
     unsigned int slotID;
@@ -75,7 +75,7 @@ namespace DISTPROJ {
     };
     unsigned int getSlot() { return slotID; };
     NodeID from() {return v;};
-    bool follows( std::shared_ptr<Message> x);
+    bool isBiggerNumberThan( std::shared_ptr<Message> x);
   private:
     NodeID v;
     unsigned int slotID;

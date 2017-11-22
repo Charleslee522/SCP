@@ -63,7 +63,7 @@ void LocalNode::Tick() {
 
 void LocalNode::Start() {
 #ifdef VERBOSE
-  printf(" Start\n");
+  printf("[NODE %llu] Start\n", id);
 #endif
   if (t == nullptr) {
     t = new std::thread(&LocalNode::Tick, this);
@@ -74,7 +74,7 @@ void LocalNode::AddKnownNode(NodeID v) {
   knownNodes.insert(v);
 }
 
-void LocalNode::UpdateQurorum(Quorum _quorumSet) {
+void LocalNode::UpdateQuorum(Quorum _quorumSet) {
   quorumSet = _quorumSet;
 }
 
@@ -101,36 +101,20 @@ int LocalNode::GetThreshold(){
 }
 
 SlotNum LocalNode::Propose(std::string value){
-#if DEBUG
-  printf("[INFO]Value is: %s\n", value.c_str());
-#endif
-  std::lock_guard<std::mutex> lock(mtx);
   auto i = NewSlot();
-  auto b = Ballot{1, value};
-  printf("Finding Nonce\n");
-  auto nonce = generateNonce(&b, i);
-  printf("Nonce Found %llu\n", nonce);
-  auto m = std::make_shared<PrepareMessage>(id, i, b, Ballot{}, Ballot{}, Ballot{}, quorumSet, 0); /* TODO; resending etc */
-  SendMessage(m);
-  printf("messages sent\n");
+  Propose(value, i);
   return i;
 }
 
 void LocalNode::Propose(std::string value, SlotNum sn){
   std::lock_guard<std::mutex> lock(mtx);
   auto b = Ballot{1, value};
-#ifdef VERBOSE
-  printf("Finding Nonce\n");
-#endif
   auto nonce = generateNonce(&b, sn);
 #ifdef VERBOSE
-  printf("Nonce Found %llu\n", nonce);
+  printf("[NODE %llu] Nonce Found %llu\n", id, nonce);
 #endif
   auto m = std::make_shared<PrepareMessage>(id, sn, b, Ballot{}, Ballot{}, Ballot{}, quorumSet, 0); /* TODO; resending etc */
   SendMessage(m);
-#ifdef VERBOSE
-  printf("messages sent\n");
-#endif
 }
 
 SlotNum LocalNode::NewSlot(){
@@ -140,9 +124,6 @@ SlotNum LocalNode::NewSlot(){
 }
 
 void LocalNode::SendMessage(std::shared_ptr<Message> msg) {
-#if DEBUG
-  printf("[INFO] SendMessage start\n");
-#endif
   // TODO : interface with FakeRPC.
   mc->Broadcast(msg, GetQuorumSet().members);
 }
@@ -155,25 +136,20 @@ void LocalNode::SendMessageTo(std::shared_ptr<Message> msg, NodeID i) {
 bool LocalNode::ReceiveMessage(std::shared_ptr<Message>* msg) {
   bool received = mc->Receive(msg);
   if (received && msg) {
-
-    // PRINT here just to show we got it 
-#ifdef VERBOSE
-    printf("Got a message\n");
-#endif
     return true;
   }
   return false;
 }
 
 void LocalNode::ProcessMessage(std::shared_ptr<Message> msg) {
-  auto slot = msg -> getSlot();
+  auto slot = msg->getSlot();
   if (log.find(slot) == log.end()) {
-    log[slot] =std::make_shared<Slot>(slot, this);
+    log[slot] = std::make_shared<Slot>(slot, this);
     if (slot > maxSlot) {
       maxSlot = slot;
     }
   }
-  log[msg->getSlot()]->handle(msg);
+  log[slot]->handle(msg);
 }
 
 void LocalNode::DumpLog() {
@@ -188,7 +164,7 @@ std::pair<std::string, bool> LocalNode::View(SlotNum s){
   std::lock_guard<std::mutex> lock(mtx);
   try{
 #ifdef VERBOSE
-    printf("VIEW: %s\n", log.at(s)->Phase_s().c_str());
+    printf("[NODE %llu] Phase %s in View Method\n", id, log.at(s)->Phase_s().c_str());
 #endif
     bool b = log.at(s)->GetPhase() == EXTERNALIZE;
     return std::pair<std::string, bool>(log.at(s)->GetValue(), b);

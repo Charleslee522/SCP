@@ -6,14 +6,18 @@
 using namespace DISTPROJ;
 using namespace DISTPROJ::Application::KVStellar;
 
+extern unsigned long long uuid;
+
 ServerKV::ServerKV(std::shared_ptr<RPCLayer> rpc, float _quorumThresholdRatio) 
   : quorumThresholdRatio(_quorumThresholdRatio) {
-  // Generate node id.
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_int_distribution<NodeID> dist(0, ~0);
+  //Generate node id.
+  // std::random_device rd;
+  // std::mt19937 gen(rd());
+  // std::uniform_int_distribution<NodeID> dist(0, ~0);
 
-  node = new LocalNode(dist(gen), *rpc, Quorum{});
+  // node = new LocalNode(dist(gen), *rpc, Quorum{});
+  node = new LocalNode(uuid, *rpc, Quorum{});
+  ++uuid;
   curSlot = 0;
 
   node->Start();
@@ -57,7 +61,7 @@ std::string ServerKV::ApplyOperation(Operation &op) {
     Operation decidedOp;
     auto newSlot = curSlot + 1;
     auto p = node->View(newSlot);
-    if (p.second) {
+    if (p.second) { // Externalize
       std::istringstream ss;
       ss.str(p.first);
       {
@@ -74,7 +78,7 @@ std::string ServerKV::ApplyOperation(Operation &op) {
       node->Propose(ss.str(), newSlot);
 
       // Wait for a decision.
-      while (!p.second) {
+      while (!p.second) { // Until Externalize
         p = node->View(newSlot);
       }
       std::istringstream iss;

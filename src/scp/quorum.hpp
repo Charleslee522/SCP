@@ -7,7 +7,6 @@
 #include <cereal/types/set.hpp>
 
 namespace DISTPROJ {
-
   struct Quorum {
     int threshold; // important to be int, not uint (we compare it to -1 in slot)
     std::set<NodeID> members;

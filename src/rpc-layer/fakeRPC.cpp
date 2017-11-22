@@ -20,31 +20,30 @@ void FakeRPCLayer::AddNode(NodeID node) {
 }
 
 MessageClient* FakeRPCLayer::GetClient(NodeID id) {
-#if DEBUG
-  printf("[INFO] GetClient Begin!\n");
-#endif
   return new MessageClient(id, this); 
 }
 
 void FakeRPCLayer::Send(std::shared_ptr<Message> msg, NodeID id, NodeID peerID) {
-#if DEBUG
-  printf("[INFO] FakeRPCLayer::Send() begin!\n");
+#ifdef VERBOSE
+  if(msg->type() == PrepareMessage_t) {
+    printf("[NODE %llu] Send Prepare Message To %llu\n", id, peerID);
+  } else {
+    printf("[NODE %llu] Send Finish Message To %llu\n", id, peerID);    
+  }
 #endif
+// if stoping message to myself, system stucked.
+//   if(id == peerID) {
+// #ifdef VERBOSE
+//   printf("[NODE %llu] Don't Send Message To Myself\n", id);
+// #endif
+//     return;
+//   }
   std::ostringstream ss;
   {
     cereal::JSONOutputArchive archive(ss);
-#if DEBUG
-    printf("[INFO] JSONOutputArchive create!\n");
-#endif
-    archive(CEREAL_NVP(msg));
-#if DEBUG
-    printf("[INFO] CEREAL_NVP\n");
-#endif
+    archive(CEREAL_NVP(msg), CEREAL_NVP(id));
   }
   messageQueues[peerID]->Add(ss.str());
-#if DEBUG
-  printf("[INFO] Add to messageQueues\n");
-#endif
 }
 
 bool FakeRPCLayer::Receive(std::shared_ptr<Message>* msg, NodeID id) {
@@ -53,25 +52,26 @@ bool FakeRPCLayer::Receive(std::shared_ptr<Message>* msg, NodeID id) {
     return false;
   } else {
     std::istringstream ss;
+    NodeID receiveID;
     ss.str(messageQueues[id]->Get());
     {
       cereal::JSONInputArchive archive(ss);
-      archive(*msg);
+      archive(*msg, receiveID);
     }
+#ifdef VERBOSE
+  if((*msg)->type() == PrepareMessage_t) {
+    printf("[NODE %llu] Receive Prepare Message From %llu\n", id, receiveID);
+  } else {
+    printf("[NODE %llu] Receive Finish Message From %llu\n", id, receiveID);    
+  }
+#endif
     return true && *msg; // implicitly checks for validity
   }
 }
 
 void FakeRPCLayer::Broadcast(std::shared_ptr<Message> msg, NodeID id, std::set<NodeID> peers) {
   // Client messages itself.
-#if DEBUG
-  printf("[INFO] FakeRPCLayer::Broadcast Begin!\n");
-  printf("[INFO] NodeID: %llu\n", id);
-#endif
   for (auto peer : peers) {
-#if DEBUG
-    printf("[INFO] peer NodeID: %llu\n", peer);
-#endif
     Send(msg, id, peer);
   }
 }
@@ -79,29 +79,16 @@ void FakeRPCLayer::Broadcast(std::shared_ptr<Message> msg, NodeID id, std::set<N
 // MessageClient
 
 MessageClient::MessageClient(NodeID id, RPCLayer* r) : id(id), rpc(r) {
-#if DEBUG
-  printf("[INFO] MessageClient Constructor Begin!\n");
-#endif
 }
 
 void MessageClient::Send(std::shared_ptr<Message> msg, NodeID peerID) {
-#if DEBUG
-  printf("[INFO] MessageClient::Send Begin!\n");
-#endif
   rpc->Send(msg, id, peerID);
 }
 
 bool MessageClient::Receive(std::shared_ptr<Message>* msg) {
-#if DEBUG
-  printf("[INFO] MessageClient::Receive Begin!\n");
-#endif
   return rpc->Receive(msg, id);
 }
 
 void MessageClient::Broadcast(std::shared_ptr<Message> msg, std::set<NodeID> peers) {
-#if DEBUG
-  printf("[INFO] MessageClient::Broadcast Begin!\n");
-#endif
   rpc->Broadcast(msg, id, peers);
 }
-

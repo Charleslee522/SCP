@@ -91,9 +91,9 @@ void StellarKV::Put(string k, string val){
   }
   return;
 }
-int StellarKV::GetThreshold(){
-  return node->GetThreshold();
-}
+// int StellarKV::GetThreshold(){
+//   return node->GetThreshold();
+// }
 void StellarKV::AddPeer(NodeID n) {
   node->AddNodeToQuorum(n);
   node->SetThreshold(node->QuorumSize() * threshold_ratio);

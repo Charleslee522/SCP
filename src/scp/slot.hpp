@@ -3,6 +3,8 @@
 
 #include <string>
 #include <map>
+#include <mutex>
+#include <sstream>
 
 #include "ballot.hpp"
 #include "quorum.hpp"
@@ -17,11 +19,11 @@ namespace DISTPROJ {
   enum Phase { PREPARE, FINISH, EXTERNALIZE };
 
   struct SlotState {
-    Ballot b;
-    Ballot p;
-    Ballot p_;
-    Ballot c;
-    unsigned int slotNum;
+    Ballot b;   // ballot
+    Ballot p;   // prepare
+    Ballot p_;  // prepare backup
+    Ballot c;   // commit
+    unsigned int slotNum; // slot sequence number
   };
 
 
@@ -34,25 +36,28 @@ namespace DISTPROJ {
 
     // Dump state / received message inforamtion.
     void Dump();
-    Phase GetPhase() { return phi;};
+    std::string printSlot();
+    Phase GetPhase() { return slotPhase;};
     std::string GetValue() { return state.c.value;};
 
     std::string Phase_s() {
 
     const static std::map<Phase, std::string> phase= {{PREPARE, "Prepare"}, {FINISH, "Finish"}, {EXTERNALIZE, "Externalize"}};
-    return phase.at(phi);
+    return phase.at(slotPhase);
     };
   private:
     void handle(std::shared_ptr<PrepareMessage> msg);
     void handle(std::shared_ptr<FinishMessage> msg);
-    void lastDefined(NodeID n, std::shared_ptr<Message>* m);
+    void getMessageFromMap(NodeID n, std::shared_ptr<Message>* m);
+    bool isMember(NodeID from);
     // void handlePrepare(NodeID v, Quorum& d, SlotState vState);
     // void handleFinish(NodeID v, Quorum& d, SlotState vState);
 
     SlotState state;
-    Phase phi;
-    std::map<NodeID, std::shared_ptr<Message>> M;
+    Phase slotPhase;
+    std::map<NodeID, std::shared_ptr<Message>> messageMap_;
     LocalNode * node;
+    std::mutex mtx;
 
     std::shared_ptr<PrepareMessage> Prepare();
     std::shared_ptr<FinishMessage> Finish();

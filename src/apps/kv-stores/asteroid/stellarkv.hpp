@@ -22,9 +22,9 @@ namespace DISTPROJ{
         virtual void apply(std::map<std::string, std::pair<Version,std::string>>* log) {};
       };
       class PutMessage : public ActionMessage{
-      public:
         std::string Key;
         std::string Value;
+      public:
         Version v;
         PutMessage() : PutMessage("","",0){};
         PutMessage(std::string k, std::string v, Version ver) : Key(k), Value(v), v(ver){};
@@ -62,11 +62,13 @@ namespace DISTPROJ{
         std::pair<std::pair<Version,std::string>,bool> Get(std::string k);
         void Put(std::string k, std::string v);
         NodeID GetNodeID();
-        int GetThreshold();
+        //int GetThreshold();
         void AddPeer(NodeID node);
         void RemovePeer(NodeID node);
         void AddPeers(std::set<NodeID> node);
         void RemovePeers(std::set<NodeID> node);
+        
+        LocalNode * getNode() const { return node; }
 
       };
     }

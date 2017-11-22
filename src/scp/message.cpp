@@ -29,36 +29,32 @@ using namespace DISTPROJ;
 // }
 
 
-bool FinishMessage::follows( std::shared_ptr<Message> x) {
-  auto m = std::static_pointer_cast<FinishMessage>( x);
-  switch (x->type()){
+bool FinishMessage::isBiggerNumberThan( std::shared_ptr<Message> m) {
+  auto message = std::static_pointer_cast<FinishMessage>(m);
+  switch (m->type()){
   case FinishMessage_t:
-	return b.num > m->b.num;
-  case PrepareMessage_t:
-	return true;
+	return b.num > message->b.num;
   default:
-	return true; 
+	return true;
   }
 }
 
 
+bool PrepareMessage::isBiggerNumberThan( std::shared_ptr<Message> m) {
+  auto message = std::static_pointer_cast<PrepareMessage>(m);
+  auto first = b.num > message->b.num;
+  auto first_continue = (b.num == message->b.num);
+  auto second = p.num > message->p.num;
+  auto second_continue = (p.num == message->p.num);
+  auto third = p_.num > message->p_.num;
+  auto third_continue = (p_.num == message->p_.num);
+  auto fourth = c.num > message->c.num;
 
-
-bool PrepareMessage::follows( std::shared_ptr<Message> x) {
-  auto m = std::static_pointer_cast<PrepareMessage>(x);
-  auto first = b.num > m->b.num;
-  auto first_continue = b.num == m->b.num;
-  auto second = p.num > m->p.num;
-  auto second_continue = p.num == m->p.num;
-  auto third = p_.num > m->p_.num;
-  auto third_continue =p_.num == m->p_.num;
-  auto fourth = c.num > m->c.num;
-
-  switch (x->type()){
+  switch (m->type()){
   case FinishMessage_t:
 	return false;
   case PrepareMessage_t:
-	return first || (  first_continue && (second || (second_continue && (third || (third_continue && fourth))))); // See SCP pg 29
+	return first || ( first_continue && (second || (second_continue && (third || (third_continue && fourth))))); // See SCP pg 29
   default:
 	return true; 
   }
