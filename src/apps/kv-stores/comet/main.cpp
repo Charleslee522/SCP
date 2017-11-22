@@ -21,19 +21,26 @@ unsigned long long uuid = 0;
 void testOriginal();
 void test3QuorumSet(double threshold);
 void testSameMessage(double threshold);
-void testOnlyOneQuorum(double threshold, int n);
+void testOnlyOneQuorum(int n_nodes, double threshold);
+void printCmdUsage();
 
 int main(int argc, char *argv[]) {
-    //testOriginal();
-    {
-        double threshold = atof(argv[1]);
-        //test3QuorumSet(threshold);
-        //testSameMessage(threshold);
-        {
-            double n = atoi(argv[2]);
-            testOnlyOneQuorum(threshold, n);
-        }
+    if(argc < 3) {
+        printCmdUsage();
+        return 0;
     }
+    int n_nodes = atoi(argv[1]);
+    double threshold = atof(argv[2]);
+    if(n_nodes < 2) {
+        printCmdUsage();
+        return 0;
+    }
+    testOnlyOneQuorum(n_nodes, threshold);
+}
+
+void printCmdUsage() {
+    printf("Usage: ./comet (n_nodes in one quorum >= 2) (threshold)\n");        
+    printf("Example: ./comet 3 0.66\n");
 }
 
 void testOriginal() {
@@ -86,6 +93,7 @@ void testOriginal() {
 void test3QuorumSet(double threshold) {
     const int SERVER_N = 11;
     const int SET1_SN = 5;
+    const int SET2_SN = 7;
 
     printf("threshold: %lf\n", threshold);
 
@@ -196,7 +204,7 @@ void testSameMessage(double threshold) {
     return;
 }
 
-void testOnlyOneQuorum(double threshold, int N_NODE) {
+void testOnlyOneQuorum(int N_NODE, double threshold) {
     shared_ptr<FakeRPCLayer> rpc = make_shared<FakeRPCLayer>();
 
     vector< shared_ptr<ServerKV> > servers;
