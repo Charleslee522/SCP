@@ -50,8 +50,6 @@ namespace DISTPROJ {
     void handle(std::shared_ptr<FinishMessage> msg);
     void getMessageFromMap(NodeID n, std::shared_ptr<Message>* m);
     bool isMember(NodeID from);
-    // void handlePrepare(NodeID v, Quorum& d, SlotState vState);
-    // void handleFinish(NodeID v, Quorum& d, SlotState vState);
 
     SlotState state;
     Phase slotPhase;

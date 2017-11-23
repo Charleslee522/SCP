@@ -7,7 +7,8 @@
 #include "node.hpp"
 #include "slot.hpp"
 #include "fakeRPC.hpp"
-#include "message.hpp"
+#include "PrepareMessage.hpp"
+#include "FinishMessage.hpp"
 
 using namespace DISTPROJ;
 

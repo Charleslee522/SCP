@@ -32,12 +32,13 @@ Quorum Node::GetQuorumSet() {
 
 void Node::PrintQuorumSet() {
   printf("Printing quorum set for node %llu \n", id);
-  printf("Threshold: %i ", quorumSet.threshold);
-  printf("Quorum members : \n");
+  printf("Threshold: %d\n", quorumSet.threshold);
+  printf("Quorum members : ");
   std::set<NodeID>::iterator iter;
   for (iter=quorumSet.members.begin(); iter != quorumSet.members.end(); ++iter) {
-    std::cout << (*iter) << "\n";
+    std::cout << (*iter) << ", ";
   }
+  std::cout << std::endl;
 }
 
 LocalNode::LocalNode(NodeID _id, RPCLayer& _rpc)
@@ -55,8 +56,6 @@ void LocalNode::Tick() {
     std::lock_guard<std::mutex> lock(mtx);
     if (ReceiveMessage(&m)) {
       ProcessMessage(m);
-
-
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
@@ -116,21 +115,44 @@ void LocalNode::Propose(std::string value, SlotNum sn){
 #endif
   auto m = std::make_shared<PrepareMessage>(id, sn, b, Ballot{}, Ballot{}, Ballot{}, quorumSet, 0); /* TODO; resending etc */
   SendMessage(m);
+#ifdef VERBOSE
+  {
+    //std::lock_guard<std::mutex> lock(mtx);
+    printf("[NODE %llu] Broadcast(SendMessage) to every validator in LocalNode::Propose()\n", id);
+    this->PrintQuorumSet();
+  }
+#endif
 }
 
 SlotNum LocalNode::NewSlot(){
-  auto a = maxSlot;
-  //maxSlot++;
+  auto a = maxSlotId;
+  //maxSlotId++;
   return a;
 }
 
 void LocalNode::SendMessage(std::shared_ptr<Message> msg) {
-  // TODO : interface with FakeRPC.
+#ifdef VERBOSE
+  printf("[NODE %llu] Broadcast Message", this->id);
+  auto slot = log.find(msg->getSlotId());
+  if(slot != log.end()) {
+    slot->second->Dump();
+  } else {
+    printf("[NODE %llu] No slot(%d) in memory\n", this->id, msg->getSlotId());
+  }
+#endif
   mc->Broadcast(msg, GetQuorumSet().members);
 }
 
 void LocalNode::SendMessageTo(std::shared_ptr<Message> msg, NodeID i) {
-  // TODO : interface with FakeRPC.
+#ifdef VERBOSE
+  printf("[NODE %llu] Send Message To %llu", this->id, i);
+  auto slot = log.find(msg->getSlotId());
+  if(slot != log.end()) {
+    slot->second->Dump();
+  } else {
+    printf("[NODE %llu] No slot(%d) in memory\n", this->id, msg->getSlotId());
+  }
+#endif
   mc->Send(msg, i);
 }
 
@@ -143,14 +165,22 @@ bool LocalNode::ReceiveMessage(std::shared_ptr<Message>* msg) {
 }
 
 void LocalNode::ProcessMessage(std::shared_ptr<Message> msg) {
-  auto slot = msg->getSlot();
-  if (log.find(slot) == log.end()) {
-    log[slot] = std::make_shared<Slot>(slot, this);
-    if (slot > maxSlot) {
-      maxSlot = slot;
+  auto slotId = msg->getSlotId();
+  if (log.find(slotId) == log.end()) {
+    log[slotId] = std::make_shared<Slot>(slotId, this);
+    if (slotId > maxSlotId) {
+      maxSlotId = slotId;
     }
   }
-  log[slot]->handle(msg);
+#ifdef VERBOSE
+  {
+    //std::lock_guard<std::mutex> lock(mtx);    
+    printf("[NODE %llu] DumpLog\n", this->id);
+    this->DumpLog();
+    printf("[NODE %llu] Received message: %s\n", this->id, log[slotId]->printSlot().c_str());
+  }
+#endif  
+  log[slotId]->handle(msg);
 }
 
 void LocalNode::DumpLog() {

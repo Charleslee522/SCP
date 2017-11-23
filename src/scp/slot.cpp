@@ -68,7 +68,7 @@ void Slot::handle(std::shared_ptr<Message> _msg){
         }
         handle(pmsg);
 #ifdef VERBOSE
-  printf("[NODE %llu] push PrepareMessage from %llu to messageMap\n", node->id, from);
+        printf("[NODE %llu] push PrepareMessage from %llu to messageMap\n", node->id, from);
 #endif
         messageMap_[from] = pmsg;
       }
@@ -108,6 +108,7 @@ void Slot::handle(std::shared_ptr<Message> _msg){
 }
 #endif
 }
+
 void Slot::handle(std::shared_ptr<PrepareMessage> msg) {
 #ifdef VERBOSE
   printf("[NODE %llu] PREPARE\n", node->id);
@@ -225,7 +226,7 @@ void Slot::handle(std::shared_ptr<PrepareMessage> msg) {
         state.b.num += 1;
         returnNow = true;
 #ifdef VERBOSE
-        printf("[NODE %llu] returnNow 1(b_vblock_vote)", node->id);
+        printf("[NODE %llu] returnNow 1(b_vblock_vote)\n", node->id);
 #endif
         break;
       }
@@ -237,14 +238,16 @@ void Slot::handle(std::shared_ptr<PrepareMessage> msg) {
   if (state.c.num != 0 && (state.p > state.c || state.p_ > state.c)) {
     state.c = Ballot{};
 #ifdef VERBOSE
-        std::cout << "[NODE " << node->id << "] returnNow 2" << std::endl;
+    std::cout << "[NODE " << node->id << "] returnNow 2" << std::endl;
 #endif
     returnNow = true;
   }
 
   if (returnNow) {
+#ifdef VERBOSE
     std::cout << "[NODE " << node->id << "] returnNow -> Send Prepare Message" << std::endl;
-    node->SendMessage(Prepare());
+#endif
+    node->SendMessage(Prepare()); // meaningless line...
   }
 
   if ( state.b != state.c && state.b == state.p /* V confirms b is prepared */ ) {
@@ -276,23 +279,20 @@ void Slot::handle(std::shared_ptr<PrepareMessage> msg) {
       if (b_prepared == 0 ){
         state.c = state.b;
 #ifdef VERBOSE
-        std::cout << "[NODE " << node->id << "] returnNow -> Send Finish Message because of (b_prepared == 0), state.c == state.b;" << std::endl;
+        std::cout << "[NODE " << node->id << "] returnNow -> Send Finish Message because of (b_prepared == 0), state.c = state.b;" << std::endl;
 #endif
         node->SendMessage(Finish());
         break;
       }
     }
-
   }
-
-
 }
 void Slot::handle(std::shared_ptr<FinishMessage> msg) {
 #ifdef VERBOSE
   printf("[NODE %llu] Finish\n", node->id);
 #endif
   // Finish message implies every statement implied by Prepare v i b b 0 b D.
-  auto p = std::make_shared<PrepareMessage>(node->GetNodeID(), state.slotNum, state.b, state.b, Ballot{}, state.b, node->GetQuorumSet(),0); 
+  // auto p = std::make_shared<PrepareMessage>(node->GetNodeID(), state.slotNum, state.b, state.b, Ballot{}, state.b, node->GetQuorumSet(),0); 
   // handle(p);
   if (slotPhase == PREPARE && state.b == state.p && state.b == state.c && state.b == msg->b) { // RULE 3
     slotPhase = FINISH;

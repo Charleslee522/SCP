@@ -22,7 +22,7 @@ void StellarKV::Tick() {
   for (;;std::this_thread::sleep_for(std::chrono::milliseconds(10))){
     {
       lock_guard<mutex> lock(mtx);
-      auto p = node->View(node->GetMaxSlot());
+      auto p = node->View(node->getMaxSlotId());
       if (p.second) {
         shared_ptr<PutMessage> m;
         std::istringstream ss;
@@ -32,7 +32,7 @@ void StellarKV::Tick() {
           archive(m);
         }
         m->apply(&log);
-        node->IncrementMaxSlot();
+        node->incrementMaxSlotId();
       }
     }
     

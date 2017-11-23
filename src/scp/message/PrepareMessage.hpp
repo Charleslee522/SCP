@@ -29,7 +29,7 @@ namespace DISTPROJ {
               CEREAL_NVP(p), CEREAL_NVP(p_), CEREAL_NVP(c),
               CEREAL_NVP(d), CEREAL_NVP(nonce));
     };
-    unsigned int getSlot() { return slotID; };
+    unsigned int getSlotId() { return slotID; };
     NodeID from() {return v;};
 
     bool isBiggerNumberThan( std::shared_ptr<Message> x);

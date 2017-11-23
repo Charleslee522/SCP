@@ -22,7 +22,7 @@ namespace DISTPROJ {
   public:
     Message(MessageType t) : t(t){};
     MessageType type() { return t;};
-    virtual unsigned int getSlot() = 0;
+    virtual unsigned int getSlotId() = 0;
 
     virtual bool isBiggerNumberThan(std::shared_ptr<Message> x) = 0;
 	

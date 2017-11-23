@@ -29,7 +29,7 @@ namespace DISTPROJ {
     void serialize(Archive & archive) {
       archive(CEREAL_NVP(v),CEREAL_NVP(slotID), CEREAL_NVP(b),CEREAL_NVP(d)); // serialize things by passing them to the archive
     };
-    unsigned int getSlot() { return slotID; };
+    unsigned int getSlotId() { return slotID; };
     NodeID from() {return v;};
     bool isBiggerNumberThan( std::shared_ptr<Message> x);
   private:

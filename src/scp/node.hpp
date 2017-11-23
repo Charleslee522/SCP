@@ -61,11 +61,11 @@ namespace DISTPROJ {
     void ProcessMessage(std::shared_ptr<Message> msg);
     void DumpLog();
     std::pair<std::string, bool> View(SlotNum s);;
-    void IncrementMaxSlot() { maxSlot++; };
-    SlotNum GetMaxSlot() { return maxSlot; };
+    void incrementMaxSlotId() { maxSlotId++; };
+    SlotNum getMaxSlotId() { return maxSlotId; };
 
   private:
-    SlotNum maxSlot;
+    SlotNum maxSlotId;
     std::mutex mtx;
     SlotNum NewSlot(); // only one of these can run at a time
     void Tick();

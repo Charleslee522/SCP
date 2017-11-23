@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
         printCmdUsage();
         return 0;
     }
+    //test3QuorumSet(threshold);
     testOnlyOneQuorum(n_nodes, threshold);
 }
 
@@ -138,8 +139,8 @@ void test3QuorumSet(double threshold) {
     printf("servers[0] has Value 2? ");
     cout << client1->Get("2") << endl;
 
-    printf("servers[0] has Value 1? ");
-    cout << client1->Get("1") << endl;
+    // printf("servers[0] has Value 1? ");
+    // cout << client1->Get("1") << endl;
 
     return;
 }
@@ -225,11 +226,14 @@ void testOnlyOneQuorum(int N_NODE, double threshold) {
     shared_ptr<ClientKV> client1 = make_shared<ClientKV>(servers.front(), "");
     shared_ptr<ClientKV> client2 = make_shared<ClientKV>(servers.back(), "");
     
-    printf("[NODE %llu] Put (1, Value 1)\n", servers.front()->GetNodeID());    
-    client1->Put("1", "Value 1");
+    printf("[NODE %llu] Put (KEY_1, VALUE_1)\n", servers.front()->GetNodeID());    
+    client1->Put("KEY_1", "VALUE_1");
 
-    printf("[NODE %llu] Get (1) = ", servers.back()->GetNodeID());
-    cout << "[NODE " << servers.back()->GetNodeID() << "]" << client2->Get("1") << endl;
+    printf("[NODE %llu] Put (KEY_2, VALUE_2)\n", servers.back()->GetNodeID());    
+    client2->Put("KEY_2", "VALUE_2");
+
+    // printf("[NODE %llu] Get (KEY_1) = ", servers.back()->GetNodeID());
+    // cout << "[NODE " << servers.back()->GetNodeID() << "]" << client2->Get("KEY_1") << endl;
 
     return;
 }
