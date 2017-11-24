@@ -226,7 +226,7 @@ void Slot::handle(std::shared_ptr<PrepareMessage> msg) {
         state.b.num += 1;
         returnNow = true;
 #ifdef VERBOSE
-        printf("[NODE %llu] returnNow 1(b_vblock_vote)\n", node->id);
+        printf("[NODE %llu] returnNow=true (b_vblock_vote)\n", node->id);
 #endif
         break;
       }
@@ -287,6 +287,7 @@ void Slot::handle(std::shared_ptr<PrepareMessage> msg) {
     }
   }
 }
+
 void Slot::handle(std::shared_ptr<FinishMessage> msg) {
 #ifdef VERBOSE
   printf("[NODE %llu] Finish\n", node->id);

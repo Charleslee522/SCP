@@ -229,8 +229,8 @@ void testOnlyOneQuorum(int N_NODE, double threshold) {
     printf("[NODE %llu] Put (KEY_1, VALUE_1)\n", servers.front()->GetNodeID());    
     client1->Put("KEY_1", "VALUE_1");
 
-    printf("[NODE %llu] Put (KEY_2, VALUE_2)\n", servers.back()->GetNodeID());    
-    client2->Put("KEY_2", "VALUE_2");
+    //printf("[NODE %llu] Put (KEY_2, VALUE_2)\n", servers.back()->GetNodeID());    
+    //client2->Put("KEY_2", "VALUE_2");
 
     // printf("[NODE %llu] Get (KEY_1) = ", servers.back()->GetNodeID());
     // cout << "[NODE " << servers.back()->GetNodeID() << "]" << client2->Get("KEY_1") << endl;

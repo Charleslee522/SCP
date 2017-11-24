@@ -23,7 +23,7 @@ Node::Node(NodeID _id, RPCLayer& _rpc, Quorum _quorumSet)
 }
 
 NodeID Node::GetNodeID() { 
-  return id; 
+  return id;
 }
 
 Quorum Node::GetQuorumSet() {
@@ -175,8 +175,8 @@ void LocalNode::ProcessMessage(std::shared_ptr<Message> msg) {
 #ifdef VERBOSE
   {
     //std::lock_guard<std::mutex> lock(mtx);    
-    printf("[NODE %llu] DumpLog\n", this->id);
-    this->DumpLog();
+    //printf("[NODE %llu] DumpLog\n", this->id);
+    //this->DumpLog();
     printf("[NODE %llu] Received message: %s\n", this->id, log[slotId]->printSlot().c_str());
   }
 #endif  
