@@ -37,8 +37,8 @@ namespace DISTPROJ {
     // Dump state / received message inforamtion.
     void Dump();
     std::string printSlot();
-    Phase GetPhase() { return slotPhase;};
-    std::string GetValue() { return state.c.value;};
+    Phase GetPhase() { return slotPhase; };
+    std::string GetValue() { return state.c.value; };
 
     std::string Phase_s() {
 

@@ -70,40 +70,41 @@ int func() {
 
 
  int main(int argc, char *argv[]) {
-   std::array<shared_ptr<StellarKV>, N+1> nodes;
-   // Create transport layer.
-   shared_ptr<FakeRPCLayer> rpc = make_shared<FakeRPCLayer>();
+   func();
+  //  std::array<shared_ptr<StellarKV>, N+1> nodes;
+  //  // Create transport layer.
+  //  shared_ptr<FakeRPCLayer> rpc = make_shared<FakeRPCLayer>();
 
-   // Create nodes.
-   for (auto i = 0; i < N; ++i){
-     nodes[i] = make_shared<StellarKV>(rpc, THRESHOLD);
-   }
+  //  // Create nodes.
+  //  for (auto i = 0; i < N; ++i){
+  //    nodes[i] = make_shared<StellarKV>(rpc, THRESHOLD);
+  //  }
 
-   // Print IDs.
-   for (auto i = 0; i < N; ++i)
-     std::cout << i << "'th node id: " << nodes[i]->GetNodeID() << "\n";
+  //  // Print IDs.
+  //  for (auto i = 0; i < N; ++i)
+  //    std::cout << i << "'th node id: " << nodes[i]->GetNodeID() << "\n";
 
-   // Create quorum sets.
-   Quorum qs;
-   qs.threshold = 3;
+  //  // Create quorum sets.
+  //  Quorum qs;
+  //  qs.threshold = 3;
 
-   for(auto i = 0; i < N; ++i) {
-    qs.members.insert(nodes[i]->GetNodeID());
-   }
+  //  for(auto i = 0; i < N; ++i) {
+  //   qs.members.insert(nodes[i]->GetNodeID());
+  //  }
 
-   // Add quorum sets to nodes.
-   for (auto i = 0; i < N-1; ++i)
-     nodes[i]->getNode()->UpdateQuorum(qs);
+  //  // Add quorum sets to nodes.
+  //  for (auto i = 0; i < N-1; ++i)
+  //    nodes[i]->getNode()->UpdateQuorum(qs);
 
-   // Print a nodes quorum set threshold.
-   nodes[0]->getNode()->PrintQuorumSet();
+  //  // Print a nodes quorum set threshold.
+  //  nodes[0]->getNode()->PrintQuorumSet();
 
-   // Update the quorum set.
-   nodes[N] = make_shared<StellarKV>(rpc, THRESHOLD);
-   nodes[0]->getNode()->AddNodeToQuorum(nodes[N]->GetNodeID());
+  //  // Update the quorum set.
+  //  nodes[N] = make_shared<StellarKV>(rpc, THRESHOLD);
+  //  nodes[0]->getNode()->AddNodeToQuorum(nodes[N]->GetNodeID());
    
-   printf("Add Node\n");
-   nodes[0]->getNode()->PrintQuorumSet();
+  //  printf("Add Node\n");
+  //  nodes[0]->getNode()->PrintQuorumSet();
 /*
    printf("Update Quorum\n");
    nodes[1]->getNode()->UpdateQuorum(qs);

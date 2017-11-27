@@ -5,11 +5,15 @@ using namespace DISTPROJ;
 using namespace DISTPROJ::Application::StellarKV;
 using namespace std;
 
+extern unsigned long long uuid;
+
 StellarKV::StellarKV(shared_ptr<RPCLayer> rpc, float tr)  : threshold_ratio(tr){
-  random_device rd ;
-  mt19937 gen(rd());
-  uniform_int_distribution<NodeID> dist(0, ~0);
-  node = new LocalNode(dist(gen), *rpc, Quorum{});
+  // random_device rd ;
+  // mt19937 gen(rd());
+  // uniform_int_distribution<NodeID> dist(0, ~0);
+  // node = new LocalNode(dist(gen), *rpc, Quorum{});
+  node = new LocalNode(uuid, *rpc, Quorum{});
+  ++uuid;
   slot = 0;
   node->Start();
   t = new thread(&StellarKV::Tick, this);

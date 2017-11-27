@@ -22,9 +22,9 @@ namespace DISTPROJ{
         virtual void apply(std::map<std::string, std::pair<Version,std::string>>* log) {};
       };
       class PutMessage : public ActionMessage{
+      public:
         std::string Key;
         std::string Value;
-      public:
         Version v;
         PutMessage() : PutMessage("","",0){};
         PutMessage(std::string k, std::string v, Version ver) : Key(k), Value(v), v(ver){};
